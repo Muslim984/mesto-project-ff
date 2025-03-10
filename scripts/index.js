@@ -2,7 +2,7 @@ const templateCard = document.querySelector("#card-template").content;
 
 const placeMain = document.querySelector(".places__list");
 
-function createCard(createCard) {
+function createCard(createCard, deleteCard) {
   const cardElement = templateCard.querySelector(".card").cloneNode(true);
   const cardText = cardElement.querySelector(".card__title");
   cardText.textContent = createCard.name;
