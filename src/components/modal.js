@@ -8,6 +8,12 @@ function hideModal(modalElement) {
   document.removeEventListener("keydown", onEscapeKeyPress);
 }
 
+function closePopupOnOverlay(evt, popupElem) {
+  if (evt.target === evt.currentTarget) {
+    hideModal(popupElem);
+  }
+}
+
 function onEscapeKeyPress(evt) {
   if (evt.key === "Escape") {
     const activeModal = document.querySelector(".popup_is-opened");

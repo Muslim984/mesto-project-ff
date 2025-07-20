@@ -80,12 +80,6 @@ function submitNewCardForm(evt) {
   hideModal(popupCardAdd);
 }
 
-function closePopupOnOverlay(evt, popupElem) {
-  if (evt.target === evt.currentTarget) {
-    hideModal(popupElem);
-  }
-}
-
 closeBtnImage.addEventListener("click", () => hideModal(popupImagePreview));
 btnProfileEdit.addEventListener("click", launchEditPopup);
 btnCardAdd.addEventListener("click", () => showModal(popupCardAdd));
