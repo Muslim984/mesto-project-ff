@@ -17,10 +17,8 @@ function closePopupOnOverlay(evt, popupElem) {
 function onEscapeKeyPress(evt) {
   if (evt.key === "Escape") {
     const activeModal = document.querySelector(".popup_is-opened");
-    if (activeModal) {
-      hideModal(activeModal);
-    }
+    if (activeModal) hideModal(activeModal);
   }
 }
 
-export { showModal, hideModal };
+export { showModal, hideModal, closePopupOnOverlay };

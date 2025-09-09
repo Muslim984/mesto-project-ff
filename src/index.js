@@ -5,7 +5,7 @@ import {
   removeCardNode,
   toggleCardLike,
 } from "./components/card.js";
-import { showModal, hideModal } from "./components/modal.js";
+import { showModal, hideModal, closePopupOnOverlay } from "./components/modal.js";
 
 const containerCards = document.querySelector(".places__list");
 const btnProfileEdit = document.querySelector(".profile__edit-button");
