@@ -1,31 +1,61 @@
-const templateCardNode = document.querySelector('#card-template').content.querySelector(".card");
+import { deleteCardApi, likeCardApi, dislikeCardApi } from "./api";
 
-function generateCardComponent(dataCard, onRemoveCard, onOpenPopup, onToggleLike) {
-  const newCard = templateCardNode.cloneNode(true),
-        imageElement = newCard.querySelector('.card__image'),
-        titleElement = newCard.querySelector('.card__title'),
-        likeToggleBtn = newCard.querySelector('.card__like-button');
+const cardTemplate = document.querySelector("#card-template").content;
 
-  imageElement.src = dataCard.link;
-  imageElement.alt = dataCard.name;
-  titleElement.textContent = dataCard.name;
+export function createCard(item, removeCard, handleLikeCard, previewImagePopup, userId) {
+  const card = cardTemplate.querySelector(".places__item").cloneNode(true);
+  const deleteButton = card.querySelector(".card__delete-button");
+  const likeButton = card.querySelector(".card__like-button");
+  const cardImage = card.querySelector(".card__image");
+  const likeCount = card.querySelector(".card__like-count");
+  const title = card.querySelector(".card__title");
 
-  newCard.querySelector('.card__delete-button')
-         .addEventListener('click', () => onRemoveCard(newCard));
+  likeCount.textContent = item.likes.length;
+  cardImage.src = item.link;
+  cardImage.alt = item.name;
+  title.textContent = item.name;
 
-  imageElement.addEventListener('click', () => onOpenPopup(dataCard.link, dataCard.name));
+  if (item.owner && item.owner._id === userId) {
+    deleteButton.addEventListener("click", (e) => removeCard(e, item._id));
+  } else {
+    deleteButton.classList.add("card__delete-button_hidden");
+  }
 
-  likeToggleBtn.addEventListener('click', () => onToggleLike(likeToggleBtn));
+  if (item.likes.some((user) => user._id === userId)) {
+    likeButton.classList.add("card__like-button_is-active");
+  }
 
-  return newCard;
+  likeButton.addEventListener("click", (evt) =>
+    handleLikeCard(evt, likeButton, item._id, likeCount)
+  );
+
+  cardImage.addEventListener("click", () => previewImagePopup(item.link, item.name));
+
+  return card;
 }
 
-function removeCardNode(domElement) {
-  domElement.remove();
+export function deleteCard(evt, id) {
+  evt.stopPropagation();
+  deleteCardApi(id)
+    .then(() => {
+      evt.target.closest(".places__item").remove();
+    })
+    .catch((er) => {
+      console.log(`Ошибка в удалении карточки: ${er}`);
+    });
 }
 
-function toggleCardLike(buttonLike) {
-  buttonLike.classList.toggle('card__like-button_is-active');
-}
+export function handleLikeCard(evt, likebtn, cardId, likeCount) {
+  evt.stopPropagation();
+  const isActive = likebtn.classList.contains("card__like-button_is-active");
+  const action = isActive ? dislikeCardApi : likeCardApi;
 
-export { generateCardComponent, removeCardNode, toggleCardLike };
+  action(cardId)
+    .then((data) => {
+      likebtn.classList.toggle("card__like-button_is-active", !isActive);
+      likeCount.textContent = data.likes.length;
+    })
+    .catch((er) => {
+      console.log(`Ошибка при смене лайка: ${er}`);
+    });
+}
