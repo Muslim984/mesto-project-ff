@@ -45,7 +45,7 @@ function callbackInputValidation(input, button, form, selectors) {
 }
 
 function inputValidation(input, button, form, selectors) {
-  input.addEventListener('input', () => callbackInputValidation(input, button, form, selectors));
+  input.addEventListener("input", () => callbackInputValidation(input, button, form, selectors));
 }
 
 function formValidation(form, selectors) {
@@ -55,13 +55,16 @@ function formValidation(form, selectors) {
 }
 
 export function enableValidation(selectors) {
-  const formArray = document.querySelectorAll(selectors.formSelector);
-  formArray.forEach((form) => formValidation(form, selectors));
+  const forms = document.querySelectorAll(selectors.formSelector);
+  forms.forEach((form) => {
+    formValidation(form, selectors);
+    const btn = form.querySelector(selectors.submitButtonSelector);
+    if (btn) setDisabledBtn(!form.checkValidity(), selectors, btn);
+  });
 }
 
 export function clearValidation(form, config) {
   form.querySelectorAll(config.inputSelector).forEach((input) => {
     hideValidationMessage(input, form, config);
-    input.value = "";
   });
 }

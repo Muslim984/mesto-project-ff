@@ -1,18 +1,8 @@
 import "./pages/index.css";
 import { showModal, hideModal } from "./components/modal.js";
 import { createCard, deleteCard, handleLikeCard } from "./components/card.js";
-import {
-  enableValidation,
-  clearValidation,
-  setDisabledBtn,
-} from "./components/validation.js";
-import {
-  getCardsData,
-  getProfileData,
-  editeProfileData,
-  addCardApi,
-  avatarProfileData,
-} from "./components/api.js";
+import { enableValidation, clearValidation, setDisabledBtn } from "./components/validation.js";
+import { getCardsData, getProfileData, editeProfileData, addCardApi, avatarProfileData } from "./components/api.js";
 
 const selectors = {
   formSelector: ".popup__form",
@@ -37,9 +27,7 @@ const jobInput = document.querySelector(".popup__input_type_description");
 
 const addCardModal = document.querySelector(".popup_type_new-card");
 const addCardModalForm = addCardModal.querySelector(".popup__form");
-const popupCardName = addCardModalForm.querySelector(
-  ".popup__input_type_card-name"
-);
+const popupCardName = addCardModalForm.querySelector(".popup__input_type_card-name");
 const popupUrl = addCardModalForm.querySelector(".popup__input_type_url");
 
 const addAvatarModal = document.querySelector(".popup_type_avatar");
@@ -66,8 +54,10 @@ function previewImagePopup(link, name) {
 }
 
 function launchEditPopup() {
+  clearValidation(formEdit, selectors);
   nameInput.value = profileTitle.textContent;
   jobInput.value = profileDescription.textContent;
+  setDisabledBtn(!formEdit.checkValidity(), selectors, editFormBtn); // кнопка активна, если форма валидна
   showModal(popupEdit);
 }
 
@@ -91,13 +81,7 @@ function submitNewCardForm(evt) {
   cardFormBtn.textContent = "Сохранение...";
   addCardApi(popupCardName.value, popupUrl.value)
     .then((data) => {
-      const card = createCard(
-        data,
-        deleteCard,
-        handleLikeCard,
-        previewImagePopup,
-        userId
-      );
+      const card = createCard(data, deleteCard, handleLikeCard, previewImagePopup, userId);
       cardContainer.prepend(card);
       addCardModalForm.reset();
       setDisabledBtn(true, selectors, cardFormBtn);
@@ -135,22 +119,13 @@ Promise.all([getCardsData(), getProfileData()])
     profileDescription.textContent = profileData.about;
 
     cardData.forEach((item) => {
-      const card = createCard(
-        item,
-        deleteCard,
-        handleLikeCard,
-        previewImagePopup,
-        userId
-      );
+      const card = createCard(item, deleteCard, handleLikeCard, previewImagePopup, userId);
       cardContainer.append(card);
     });
   })
   .catch((e) => console.error("Ошибка: " + e));
 
-editButton.addEventListener("click", () => {
-  clearValidation(formEdit, selectors);
-  launchEditPopup();
-});
+editButton.addEventListener("click", launchEditPopup);
 
 addButton.addEventListener("click", () => {
   clearValidation(addCardModalForm, selectors);
@@ -168,7 +143,7 @@ formEdit.addEventListener("submit", submitProfileForm);
 addCardModalForm.addEventListener("submit", submitNewCardForm);
 popupAvatar.addEventListener("submit", submitAvatarForm);
 
-popupClose.forEach((btn) => {
+document.querySelectorAll(".popup__close").forEach((btn) => {
   btn.addEventListener("click", (evt) => {
     const currentPopup = evt.target.closest(".popup");
     if (currentPopup) hideModal(currentPopup);
